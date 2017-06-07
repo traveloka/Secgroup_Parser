@@ -1,13 +1,10 @@
+source,destination,from_port,to_port,protocol
 ashtool-lbint,ashtool-app,29999,29999,tcp
 ashtool-lbint,ashtool-fe,29100,29100,tcp
 ashtool-app,ne-app,61004,61004,tcp
 ashtool-app,nei-app,61006,61006,tcp
 ashtool-app,cis-lbint,443,443,tcp
 ashtool-app,acso-lbint,443,443,tcp
-office_ip_vpn,ashtool-lbint,443,443,tcp
 ashtool-fe,ashtool-lbint,443,443,tcp
 ashtool-app,data-mongod,27017,27017,tcp
-sg-1234asbcz,ashtool-fe,443,443,tcp
 frs-app,ashtool-fe,443,443,tcp
-172.20.20.0/16,ashtool-fe,443,443,tcp
-172.20.20.0.123/16,ashtool-fe,80,80,tcp
