@@ -18,6 +18,7 @@ def parse_rules_from_csv(csv_file):
     rules = []
     with open(csv_file, 'r') as csv_sg:
         sg_rules = csv.reader(csv_sg, delimiter=',')
+        sg_rules.next()
         for rule in sg_rules:
             if (
                 (not rule[0] in rules_in_shared_secgroup) and
@@ -201,7 +202,8 @@ if __name__ == '__main__':
 
     try:
         rules = parse_rules_from_csv(args.file)
-    except:
+    except Exception as e:
+        print(e)
         print("Please define correct filename using --file argument")
         exit(0)
 
