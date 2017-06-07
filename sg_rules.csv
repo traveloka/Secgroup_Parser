@@ -7,7 +7,7 @@ ashtool-app,acso-lbint,443,443,tcp
 office_ip_vpn,ashtool-lbint,443,443,tcp
 ashtool-fe,ashtool-lbint,443,443,tcp
 ashtool-app,data-mongod,27017,27017,tcp
-sg-1234asbc,ashtool-fe,443,443,tcp
+sg-1234asbcz,ashtool-fe,443,443,tcp
 frs-app,ashtool-fe,443,443,tcp
 172.20.20.0/16,ashtool-fe,443,443,tcp
-172.20.20.0/16,ashtool-fe,80,80,tcp
+172.20.20.0.123/16,ashtool-fe,80,80,tcp

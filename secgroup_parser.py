@@ -17,21 +17,46 @@ def populate_groups(rules):
     for rule in rules:
         if (
             (rule[0] not in groups) and
-            (is_cidr(rule[0]) is False)
+            (not is_cidr(rule[0])) and
+            (not is_sg_id(rule[0])
+           )
         ):
             groups.append(rule[0])
         if (
             (rule[1] not in groups) and
-            (is_cidr(rule[0]) is False)
+            (not is_cidr(rule[1])) and
+            (not is_sg_id(rule[1]))
         ):
             groups.append(rule[1])
     return groups
+
+def validate_input(groups,rules):
+    valid_status=True
+    invalid_input=[]
+    for group in groups:
+        for rule in rules:
+            if ((group == rule[0]) and (rule[1] not in groups)):
+               print rule[1]
+               if not is_cidr(rule[1]):
+                  print "ini" + rules[1]
+                  if not is_sg_id(rule[1]):
+                     invalid_input.append(rule[1])
+                     valid_status=False
+            if ((group == rule[1]) and (rule[0] not in groups)):
+               print rule[0]
+               if not is_cidr(rule[0]):
+                  print "itu "+ rule[0]
+                  if  not is_sg_id(rule[0]):
+                      invalid_input.append(rule[0])
+                      valid_status=False
+    print invalid_input, valid_status
+    return valid_status, invalid_input
 
 def is_sg_id(sg):
     pattern = re.compile(r"sg-[a-z0-9]{8}")
     try:
         match_sg_id = re.match(pattern,sg)
-        if len(match_sg_id.group()) > 0:
+        if len(match_sg_id.group()) > 0 and len(sg) == 11:
            return True
         else:
            return False
@@ -39,7 +64,7 @@ def is_sg_id(sg):
         return False
 
 def is_cidr(ip):
-    pattern = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:/\d{1,2})?")
+    pattern = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}")
     try:
         match_cidr = re.match(pattern, ip)
         if len(match_cidr.group()) > 0:
@@ -151,25 +176,32 @@ if __name__ == '__main__':
 
     groups = populate_groups(rules)
 
-    print("\n* List of Connectivity Changes")
-    for group in groups:
-        print("# %s #" % (group)).expandtabs(2)
-        print_related_secgroup(group,rules)
-        print ""
-        egress_rules = parse_rules("out", group, rules)
-        ingress_rules = parse_rules("in", group, rules)
-        if (len(ingress_rules) > 0):
-            print("secgroup_ingress_acls:").expandtabs(2)
-            print_rules("in", ingress_rules)
-        
-        if (len(egress_rules) > 0):
-            print("secgroup_egress_acls:").expandtabs(2)
-            print_rules("out", egress_rules)
+    valid_status, invalid_rule=validate_input(groups,rules)
 
-    print("\nExecution Checklist")
-    print("===================")
-    print("\n* Security Groups Needs to Update")
-    for group in groups:
-        print("\t- %s" % (group)).expandtabs(2)
-    print("\n* Execute Playbook")
-    execution_checklists(groups)
+#    if valid_status:
+#        print("\n* List of Connectivity Changes")
+#        for group in groups:
+#            print("# %s #" % (group)).expandtabs(2)
+#            print_related_secgroup(group,rules)
+#            print ""
+#            egress_rules = parse_rules("out", group, rules)
+#            ingress_rules = parse_rules("in", group, rules)
+#            if (len(ingress_rules) > 0):
+#                print("secgroup_ingress_acls:").expandtabs(2)
+#                print_rules("in", ingress_rules)
+#            
+#            if (len(egress_rules) > 0):
+#                print("secgroup_egress_acls:").expandtabs(2)
+#                print_rules("out", egress_rules)
+#    
+#        print("\nExecution Checklist")
+#        print("===================")
+#        print("\n* Security Groups Needs to Update")
+#        for group in groups:
+#            print("\t- %s" % (group)).expandtabs(2)
+#        print("\n* Execute Playbook")
+#        execution_checklists(groups)
+#    else:
+#       print "Invalid Input for"
+#       for rule in invalid_rule:
+#           print rule
