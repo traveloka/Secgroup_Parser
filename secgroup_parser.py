@@ -209,31 +209,31 @@ if __name__ == '__main__':
 
     groups = populate_groups(rules)
 
+    print("\n* List of Connectivity Changes")
+    for group in groups[0]:
+        print("# %s #" % (group)).expandtabs(2)
+        print_related_secgroup(group, rules)
+        print ""
+        ingress_rules = parse_rules("in", group, rules)
+        if (len(ingress_rules) > 0):
+            print("secgroup_ingress_acls:").expandtabs(2)
+            print_rules("in", ingress_rules)
+
+    print("\nExecution Checklist")
+    print("===================")
+    print("\n* Security Groups Needs to Update")
+    list_playbook_need_to_update(groups[0],rules)
+    print("\n* Execute Playbook")
+    execution_checklists(groups[0],rules)
+ 
     if(len(groups[3]) > 0):
-        print("Invalid input detected : ")
+        print ("# WARNING #")
+        print("There is some weird invalid input for security group names, please check your input for: ")
+        stat={}
+    	for group in groups[3]:
+            stat[group]=False
         for group in groups[3]:
-            print("- %s" % group)
-        exit(0)
-    else:
-        print("\n* List of Connectivity Changes")
-        for group in groups[0]:
-            print("# %s #" % (group)).expandtabs(2)
-            print_related_secgroup(group, rules)
-            print ""
-            egress_rules = parse_rules("out", group, rules)
-            ingress_rules = parse_rules("in", group, rules)
-            if (len(ingress_rules) > 0):
-                print("secgroup_ingress_acls:").expandtabs(2)
-                print_rules("in", ingress_rules)
-
-            if (len(egress_rules) > 0):
-                print("secgroup_egress_acls:").expandtabs(2)
-                print_rules("out", egress_rules)
-
-        print("\nExecution Checklist")
-        print("===================")
-        print("\n* Security Groups Needs to Update")
-        for group in groups[0]:
-            print("\t- %s" % (group)).expandtabs(2)
-        print("\n* Execute Playbook")
-        execution_checklists(groups[0])
+            for rule in rules:
+                if ((group == rule[0] or group == rule[1]) and not stat[group]):
+                   print("- %s" % rule)
+                   stat[group]=True
